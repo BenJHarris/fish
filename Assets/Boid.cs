@@ -137,40 +137,40 @@ public class Boid : MonoBehaviour
     private void OnDrawGizmos()
     {
 
+        //Gizmos.color = Color.magenta;
+        //foreach (Boid boid in flock.members)
+        //{
+        //    Gizmos.DrawLine(position, boid.position);
+        //}
+
+        Gizmos.DrawRay(position, flock.CalculateAvoidance(this) * separationForce);
+
         Gizmos.color = Color.magenta;
-        foreach (Boid boid in flock.members)
+        Gizmos.DrawRay(position, cachedTransform.forward * collisionAvoidDst);
+
+        Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.1f);
+        Gizmos.DrawSphere(position, radius);
+
+        if (IsHeadingForCollision())
         {
-            Gizmos.DrawLine(position, boid.position);
+
+            Vector3[] rayDirections = BoidHelper.directions;
+            for (int i = 0; i < rayDirections.Length; i++)
+            {
+                Vector3 dir = cachedTransform.TransformDirection(rayDirections[i]);
+                Ray ray = new Ray(position, dir);
+                if (!Physics.SphereCast(ray, boundsRadius, collisionAvoidDst, collisionLayer))
+                {
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawRay(position, dir * collisionAvoidDst);
+                    break;
+                }
+                else
+                {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawRay(position, dir * collisionAvoidDst);
+                }
+            }
         }
-
-        //    Gizmos.DrawRay(position, flock.CalculateAvoidance(this) * separationForce);
-
-        //    Gizmos.color = Color.magenta;
-        //    Gizmos.DrawRay(position, cachedTransform.forward * collisionAvoidDst);
-
-        //    Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.1f);
-        //    Gizmos.DrawSphere(position, radius);
-
-        //    if (IsHeadingForCollision())
-        //    {
-
-        //        Vector3[] rayDirections = BoidHelper.directions;
-        //        for (int i = 0; i < rayDirections.Length; i++)
-        //        {
-        //            Vector3 dir = cachedTransform.TransformDirection(rayDirections[i]);
-        //            Ray ray = new Ray(position, dir);
-        //            if (!Physics.SphereCast(ray, boundsRadius, collisionAvoidDst, collisionLayer))
-        //            {
-        //                Gizmos.color = Color.green;
-        //                Gizmos.DrawRay(position, dir * collisionAvoidDst);
-        //                break;
-        //            }
-        //            else
-        //            {
-        //                Gizmos.color = Color.red;
-        //                Gizmos.DrawRay(position, dir * collisionAvoidDst);
-        //            }
-        //        }
-        //    }
-        }
+    }
     }
